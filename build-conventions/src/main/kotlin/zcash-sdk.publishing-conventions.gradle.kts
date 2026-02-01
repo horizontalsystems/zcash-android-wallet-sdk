@@ -63,9 +63,6 @@ extensions.getByType<MavenPublishBaseExtension>().apply {
 plugins.apply("org.gradle.signing")
 plugins.withId("org.gradle.signing") {
     project.the<SigningExtension>().apply {
-        // Maven Central allows signing for both snapshot and release SDK versions
-        isRequired = true
-
         val signingKey = run {
             val base64EncodedKey = project.property("ZCASH_ASCII_GPG_KEY").toString()
             if (base64EncodedKey.isNotEmpty()) {
@@ -76,17 +73,20 @@ plugins.withId("org.gradle.signing") {
             }
         }
 
+        // Only require signing when the key is available (not on JitPack)
+        isRequired = signingKey.isNotEmpty()
+
         if (signingKey.isNotEmpty()) {
             useInMemoryPgpKeys(signingKey, "")
-        }
 
-        project.mavenPublications(
-            object: Action<MavenPublication>{
-                override fun execute(publication: MavenPublication) {
-                    project.gradleSigning.sign(publication)
+            project.mavenPublications(
+                object: Action<MavenPublication>{
+                    override fun execute(publication: MavenPublication) {
+                        project.gradleSigning.sign(publication)
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }
 
