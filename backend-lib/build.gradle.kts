@@ -65,6 +65,7 @@ android {
 cargo {
     module = "."
     libname = "zcashwalletsdk"
+    pythonCommand = "python3"
     targets = listOf(
         "arm",
         "arm64",
