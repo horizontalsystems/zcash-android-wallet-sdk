@@ -7553,6 +7553,7 @@ dependencies = [
 name = "zcash_pool_migration_backend"
 version = "0.1.0"
 dependencies = [
+ "corez",
  "getset",
  "incrementalmerkletree",
  "libm",
@@ -7561,6 +7562,7 @@ dependencies = [
  "rand_core 0.6.4",
  "shardtree 0.7.0",
  "zcash_client_backend",
+ "zcash_encoding 0.4.0",
  "zcash_keys 0.15.0",
  "zcash_primitives 0.29.0",
  "zcash_protocol 0.10.0",
@@ -7570,8 +7572,10 @@ dependencies = [
 name = "zcash_pool_migration_sqlite"
 version = "0.1.0"
 dependencies = [
+ "corez",
  "rusqlite",
  "uuid",
+ "zcash_encoding 0.4.0",
  "zcash_pool_migration_backend",
  "zcash_protocol 0.10.0",
 ]

@@ -29,7 +29,7 @@ use zcash_pool_migration_backend::engine::{
     MigrationBackend, MigrationCrypto, MigrationState, MigrationTxId, MigrationTxState,
     PoolMigrationRead, PoolMigrationWrite,
 };
-use zcash_pool_migration_sqlite::PoolMigrations;
+use zcash_pool_migration_sqlite::orchard_ironwood::PoolMigrations;
 
 type SpendableNote = (OrchardNote, Position, u64);
 
@@ -174,6 +174,24 @@ where
         zcash_pool_migration_backend::build::sign_pczt(pczt, &ask)
             .map_err(|e| anyhow::anyhow!("signing the migration PCZT failed: {e:?}"))
     }
+
+    /// Mirrors the upstream wallet adapter (`zcash_pool_migration_backend::wallet`), which also
+    /// returns an error here: proving a transfer requires resolving the funding note's witness
+    /// against the drawn anchor boundary, which needs that boundary's checkpoint to still be
+    /// retained in the wallet's Orchard commitment tree at proving time. Migration
+    /// anchor-checkpoint retention (librustzcash issue #2700) is not wired yet, so no wallet-backed
+    /// proving path can work; the engine's own `prove_transfer` and the in-memory mock cover the
+    /// flow until it lands.
+    fn prove_transfer(
+        &self,
+        _pczt: pczt::Pczt,
+        _anchor_boundary: zcash_protocol::consensus::BlockHeight,
+    ) -> Result<pczt::Pczt, Self::Error> {
+        Err(anyhow::anyhow!(
+            "migration transfer proving is unsupported until anchor-checkpoint retention \
+             (librustzcash #2700) is wired"
+        ))
+    }
 }
 
 impl<'a, W> PoolMigrationRead for Backend<'a, W>
@@ -197,9 +215,9 @@ where
     <W as WalletRead>::Error: std::error::Error + Send + Sync + 'static,
     <W as InputSource>::Error: std::error::Error + Send + Sync + 'static,
 {
-    fn put_migration(&mut self, state: &MigrationState) -> Result<(), Self::Error> {
+    fn replace_migration(&mut self, state: &MigrationState) -> Result<(), Self::Error> {
         self.store
-            .put_migration(state)
+            .replace_migration(state)
             .map_err(|e| anyhow::anyhow!("persisting migration failed: {e:?}"))
     }
 
