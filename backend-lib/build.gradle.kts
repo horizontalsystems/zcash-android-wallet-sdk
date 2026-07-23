@@ -113,9 +113,7 @@ cargo {
     libname = "zcashwalletsdk"
     targets = listOf(
         "arm",
-        "arm64",
-        "x86",
-        "x86_64"
+        "arm64"
     )
     val minSdkVersion = project.property("ANDROID_MIN_SDK_VERSION").toString().toInt()
     apiLevels = mapOf(
@@ -149,7 +147,7 @@ project.afterEvaluate {
             name.contains("^merge.+JniLibFolders$".toRegex())
         }
         .configureEach {
-            dependsOn("cargoBuild", "cargoBuildArm64", "cargoBuildX86", "cargoBuildX86_64")
+            dependsOn("cargoBuildArm", "cargoBuildArm64")
             // Fix for mergeDebugJniLibFolders UP-TO-DATE
             inputs.dir(layout.buildDirectory.dir("rustJniLibs/android").get().asFile)
         }
