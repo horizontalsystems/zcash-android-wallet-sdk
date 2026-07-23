@@ -16,6 +16,8 @@ generated/
 out/
 target/
 jniLibs/
+# But allow pre-built native libs for JitPack
+!backend-lib/src/main/jniLibs/
 
 # Gradle files
 .gradle/
