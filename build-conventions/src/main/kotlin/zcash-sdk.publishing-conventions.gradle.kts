@@ -64,7 +64,7 @@ plugins.apply("org.gradle.signing")
 plugins.withId("org.gradle.signing") {
     project.the<SigningExtension>().apply {
         // Maven Central allows signing for both snapshot and release SDK versions
-        isRequired = true
+        isRequired = false // THROWAWAY: no GPG key for local publish
 
         val signingKey = run {
             val base64EncodedKey = project.property("ZCASH_ASCII_GPG_KEY").toString()
