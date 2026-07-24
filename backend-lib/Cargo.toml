@@ -25,10 +25,10 @@ orchard = { version = "0.15.0", features = ["unstable-voting-circuits"] }
 # `zcash_pool_migration` crate. The SQLite persistence side (formerly the separate
 # `zcash_pool_migration_sqlite` crate) has since been folded into `zcash_client_sqlite::pool_migration`
 # (see that dependency's `[patch.crates-io]` entry below) — no separate dependency needed for it.
-zcash_pool_migration_backend = { path = '../../librustzcash/zcash_pool_migration_backend', features = ["wallet"] }
+zcash_pool_migration_backend = { package = "zcash_pool_migration", path = '../../librustzcash/zcash_pool_migration', features = ["wallet"] } # THROWAWAY: crate renamed on librustzcash main
 pczt = { version = "0.8.0-rc.1", features = ["prover", "orchard", "sapling", "signer"] }
 sapling = { package = "sapling-crypto", version = "0.7", default-features = false }
-transparent = { package = "zcash_transparent", version = "0.9", default-features = false }
+transparent = { package = "zcash_transparent", version = "0.10", default-features = false } # THROWAWAY: main released 0.10.0
 zcash_address = "0.13"
 zcash_client_backend = { version = "0.24.0-rc.1", features = [
     "orchard",

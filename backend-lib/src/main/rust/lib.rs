@@ -2433,7 +2433,7 @@ pub extern "C" fn Java_cash_z_ecc_android_sdk_internal_jni_RustBackend_createPcz
                 OvkPolicy::Sender,
                 &proposal,
                 None,
-                orchard::builder::BundleType::DEFAULT,
+                zcash_primitives::transaction::builder::BundlePadding::DEFAULT, // THROWAWAY: fix/bundle_padding API change on main
             )
             .map_err(|e| anyhow!("Error creating PCZT from single-step proposal: {}", e))?;
 

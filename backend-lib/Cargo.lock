@@ -3299,9 +3299,9 @@ dependencies = [
  "serde_with",
  "zcash_note_encryption",
  "zcash_primitives 0.29.0",
- "zcash_protocol 0.10.0",
+ "zcash_protocol 0.10.1",
  "zcash_script",
- "zcash_transparent 0.9.0",
+ "zcash_transparent 0.10.0",
 ]
 
 [[package]]
@@ -3805,7 +3805,7 @@ dependencies = [
  "derive-deftly",
  "libc",
  "paste",
- "thiserror 2.0.18",
+ "thiserror 1.0.69",
 ]
 
 [[package]]
@@ -7405,12 +7405,12 @@ dependencies = [
  "zcash_client_backend",
  "zcash_client_sqlite",
  "zcash_note_encryption",
- "zcash_pool_migration_backend",
+ "zcash_pool_migration",
  "zcash_primitives 0.29.0",
  "zcash_proofs",
- "zcash_protocol 0.10.0",
+ "zcash_protocol 0.10.1",
  "zcash_script",
- "zcash_transparent 0.9.0",
+ "zcash_transparent 0.10.0",
  "zcash_voting",
  "zip32",
 ]
@@ -7438,7 +7438,7 @@ dependencies = [
  "corez",
  "f4jumble 0.1.1",
  "zcash_encoding 0.4.0",
- "zcash_protocol 0.10.0",
+ "zcash_protocol 0.10.1",
 ]
 
 [[package]]
@@ -7500,9 +7500,9 @@ dependencies = [
  "zcash_keys 0.15.0",
  "zcash_note_encryption",
  "zcash_primitives 0.29.0",
- "zcash_protocol 0.10.0",
+ "zcash_protocol 0.10.1",
  "zcash_script",
- "zcash_transparent 0.9.0",
+ "zcash_transparent 0.10.0",
  "zip32",
  "zip321",
 ]
@@ -7545,11 +7545,11 @@ dependencies = [
  "zcash_client_backend",
  "zcash_encoding 0.4.0",
  "zcash_keys 0.15.0",
- "zcash_pool_migration_backend",
+ "zcash_pool_migration",
  "zcash_primitives 0.29.0",
- "zcash_protocol 0.10.0",
+ "zcash_protocol 0.10.1",
  "zcash_script",
- "zcash_transparent 0.9.0",
+ "zcash_transparent 0.10.0",
  "zip32",
 ]
 
@@ -7624,8 +7624,8 @@ dependencies = [
  "tracing",
  "zcash_address 0.13.0",
  "zcash_encoding 0.4.0",
- "zcash_protocol 0.10.0",
- "zcash_transparent 0.9.0",
+ "zcash_protocol 0.10.1",
+ "zcash_transparent 0.10.0",
  "zip32",
 ]
 
@@ -7643,8 +7643,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "zcash_pool_migration_backend"
-version = "0.1.0"
+name = "zcash_pool_migration"
+version = "0.1.0-alpha.1"
 dependencies = [
  "corez",
  "getset",
@@ -7657,7 +7657,7 @@ dependencies = [
  "zcash_client_backend",
  "zcash_keys 0.15.0",
  "zcash_primitives 0.29.0",
- "zcash_protocol 0.10.0",
+ "zcash_protocol 0.10.1",
 ]
 
 [[package]]
@@ -7714,9 +7714,9 @@ dependencies = [
  "sha2 0.10.9",
  "zcash_encoding 0.4.0",
  "zcash_note_encryption",
- "zcash_protocol 0.10.0",
+ "zcash_protocol 0.10.1",
  "zcash_script",
- "zcash_transparent 0.9.0",
+ "zcash_transparent 0.10.0",
 ]
 
 [[package]]
@@ -7754,7 +7754,7 @@ dependencies = [
 
 [[package]]
 name = "zcash_protocol"
-version = "0.10.0"
+version = "0.10.1"
 dependencies = [
  "corez",
  "document-features",
@@ -7816,7 +7816,7 @@ dependencies = [
 
 [[package]]
 name = "zcash_transparent"
-version = "0.9.0"
+version = "0.10.0"
 dependencies = [
  "bip32",
  "bs58",
@@ -7831,7 +7831,7 @@ dependencies = [
  "subtle",
  "zcash_address 0.13.0",
  "zcash_encoding 0.4.0",
- "zcash_protocol 0.10.0",
+ "zcash_protocol 0.10.1",
  "zcash_script",
  "zcash_spec",
  "zip32",
@@ -7960,7 +7960,7 @@ dependencies = [
  "nom",
  "percent-encoding",
  "zcash_address 0.13.0",
- "zcash_protocol 0.10.0",
+ "zcash_protocol 0.10.1",
 ]
 
 [[package]]
