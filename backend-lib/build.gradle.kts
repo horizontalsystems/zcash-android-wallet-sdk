@@ -3,7 +3,7 @@ import com.google.protobuf.gradle.proto
 import org.gradle.api.GradleException
 
 plugins {
-    id("org.mozilla.rust-android-gradle.rust-android")
+    id("org.mozilla.rust-android-gradle.rust-android") apply false
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("zcash-sdk.android-conventions")
@@ -14,6 +14,17 @@ plugins {
     id("maven-publish")
     id("signing")
     id("zcash-sdk.publishing-conventions")
+}
+
+// Skip the Rust build when prebuilt JNI libraries are present or when requested
+// explicitly (JitPack/CI builders have no Rust toolchain and no sibling
+// ../../librustzcash checkout). Refresh src/main/jniLibs/ from
+// build/rustJniLibs/android of a local cargo build whenever the Rust side changes.
+val skipCargoBuild = providers.gradleProperty("skipCargoBuild").isPresent ||
+    file("src/main/jniLibs/arm64-v8a/libzcashwalletsdk.so").exists()
+
+if (!skipCargoBuild) {
+    apply(plugin = "org.mozilla.rust-android-gradle.rust-android")
 }
 
 val requestedTaskNames = gradle.startParameter.taskNames
@@ -108,56 +119,60 @@ android {
     }
 }
 
-cargo {
-    module = "."
-    libname = "zcashwalletsdk"
-    targets = listOf(
-        "arm",
-        "arm64"
-    )
-    val minSdkVersion = project.property("ANDROID_MIN_SDK_VERSION").toString().toInt()
-    apiLevels = mapOf(
-        "arm" to minSdkVersion,
-        "arm64" to minSdkVersion,
-        "x86" to minSdkVersion,
-        "x86_64" to minSdkVersion,
-    )
-    profile = "release"
-    extraCargoBuildArguments =
-        if (enableAndroidTestNativeFixtures) {
-            listOf("--features", "android-test-fixtures")
-        } else {
-            emptyList()
+if (!skipCargoBuild) {
+    extensions.configure<com.nishtahir.CargoExtension>("cargo") {
+        module = "."
+        libname = "zcashwalletsdk"
+        targets = listOf(
+            "arm",
+            "arm64"
+        )
+        val minSdkVersion = project.property("ANDROID_MIN_SDK_VERSION").toString().toInt()
+        apiLevels = mapOf(
+            "arm" to minSdkVersion,
+            "arm64" to minSdkVersion,
+            "x86" to minSdkVersion,
+            "x86_64" to minSdkVersion,
+        )
+        profile = "release"
+        extraCargoBuildArguments =
+            if (enableAndroidTestNativeFixtures) {
+                listOf("--features", "android-test-fixtures")
+            } else {
+                emptyList()
+            }
+        prebuiltToolchains = true
+        // To force the compiler to use the given page size
+        // See the new Android 16 KB page size requirement for more details:
+        // https://developer.android.com/about/versions/15/behavior-changes-all#16-kb
+        exec = { spec, _ ->
+            spec.environment["RUST_ANDROID_GRADLE_CC_LINK_ARG"] = "-Wl,-z,max-page-size=16384"
         }
-    prebuiltToolchains = true
-    // To force the compiler to use the given page size
-    // See the new Android 16 KB page size requirement for more details:
-    // https://developer.android.com/about/versions/15/behavior-changes-all#16-kb
-    exec = { spec, _ ->
-        spec.environment["RUST_ANDROID_GRADLE_CC_LINK_ARG"] = "-Wl,-z,max-page-size=16384"
     }
 }
 
 // As a workaround to the Gradle (starting from v7.4.1) and Rust Android Gradle plugin (starting from v0.9.3)
 // incompatibility issue we need to add rust jni directory manually. See
 // https://github.com/mozilla/rust-android-gradle/issues/118
-project.afterEvaluate {
-    tasks
-        .matching {
-            name.contains("^merge.+JniLibFolders$".toRegex())
-        }
-        .configureEach {
-            dependsOn("cargoBuildArm", "cargoBuildArm64")
-            // Fix for mergeDebugJniLibFolders UP-TO-DATE
-            inputs.dir(layout.buildDirectory.dir("rustJniLibs/android").get().asFile)
-        }
-    tasks
-        .matching {
-            name.startsWith("cargoBuild")
-        }
-        .configureEach {
-            inputs.property("androidTestNativeFixtures", enableAndroidTestNativeFixtures)
-        }
+if (!skipCargoBuild) {
+    project.afterEvaluate {
+        tasks
+            .matching {
+                name.contains("^merge.+JniLibFolders$".toRegex())
+            }
+            .configureEach {
+                dependsOn("cargoBuildArm", "cargoBuildArm64")
+                // Fix for mergeDebugJniLibFolders UP-TO-DATE
+                inputs.dir(layout.buildDirectory.dir("rustJniLibs/android").get().asFile)
+            }
+        tasks
+            .matching {
+                name.startsWith("cargoBuild")
+            }
+            .configureEach {
+                inputs.property("androidTestNativeFixtures", enableAndroidTestNativeFixtures)
+            }
+    }
 }
 
 protobuf {
@@ -228,10 +243,12 @@ tasks {
     })
 }
 
-project.afterEvaluate {
-    val cargoTask = tasks.getByName("cargoBuild")
-    tasks.getByName("javaPreCompileDebug").dependsOn(cargoTask)
-    tasks.getByName("javaPreCompileRelease").dependsOn(cargoTask)
+if (!skipCargoBuild) {
+    project.afterEvaluate {
+        val cargoTask = tasks.getByName("cargoBuild")
+        tasks.getByName("javaPreCompileDebug").dependsOn(cargoTask)
+        tasks.getByName("javaPreCompileRelease").dependsOn(cargoTask)
+    }
 }
 
 fun MinimalExternalModuleDependency.asCoordinateString() =
